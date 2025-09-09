@@ -1,0 +1,13 @@
+services:
+  excalidraw:
+    container_name: excalidraw
+    image: excalidraw/excalidraw:latest
+    restart: on-failure
+
+    networks:
+      - excalidraw
+
+networks:
+  excalidraw:
+    name: excalidraw
+    external: true
