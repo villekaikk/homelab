@@ -1,0 +1,58 @@
+services:
+  nextcloud:
+    container_name: nextcloud
+    image: nextcloud:31.0-apache
+    links:
+      - nextcloud-db
+      - redis
+    depends_on:
+      nextcloud-db:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      #- /data/nextcloud:/var/www/html
+      - /data/nextcloud/apps:/var/www/html/custom_apps
+      - /data/nextcloud/config:/var/www/html/config
+      - /data/nextcloud/data:/var/www/html/data
+      - /etc/secrets/nextcloud/database_pw:/run/secrets/database_pw
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_pw
+      POSTGRES_HOST: nextcloud-db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379      
+      NEXTCLOUD_TRUSTED_DOMAINS: cloud.siilikoto.xyz *siilikoto.xyz 
+      APACHE_BODY_LIMIT: 0
+      PHP_UPLOAD_LIMIT: 50G
+      PHP_MEMORY_LIMIT: 8G
+      OVERWRITEPROTOCOL: https
+    restart: always
+    networks:
+      - nextcloud
+ 
+  nextcloud-db:
+    image: postgres:17.2
+    volumes:
+      - /data/nextcloud/db:/var/lib/postgresql/data
+      - /etc/secrets/nextcloud/database_pw:/run/secrets/database_pw
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_pw
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+    restart: always
+    networks:
+      - nextcloud
+
+  redis:
+    image: redis:alpine
+    restart: always
+    command: redis-server --requirepass asd123
+    networks:
+      - nextcloud
+
+networks:
+  nextcloud:
+    name: nextcloud
+    external: true
