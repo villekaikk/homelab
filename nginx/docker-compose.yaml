@@ -10,6 +10,7 @@ services:
     volumes:
      - ./nginx.conf:/etc/nginx/nginx.conf
      - ./excalidraw.conf:/etc/nginx/excalidraw.conf
+     - ./nextcloud.conf:/etc/nginx/nextcloud.conf
      - /etc/letsencrypt/live/siilikoto.xyz/fullchain.pem:/root/ssl/fullchain.pem 
      - /etc/letsencrypt/live/siilikoto.xyz/privkey.pem:/root/ssl/privkey.pem 
      - /www/data:/www/data
